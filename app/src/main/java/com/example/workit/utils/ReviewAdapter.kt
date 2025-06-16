@@ -71,9 +71,9 @@ class ReviewAdapter(private val reviews: List<Review>) : RecyclerView.Adapter<Re
 
         for (i in stars.indices) {
             if (i < rating.toInt()) {
-                stars[i].setImageResource(R.drawable.star)
+                stars[i].setImageResource(R.drawable.star_icon)
             } else {
-                stars[i].setImageResource(R.drawable.star)
+                stars[i].setImageResource(R.drawable.star_icon)
             }
         }
     }

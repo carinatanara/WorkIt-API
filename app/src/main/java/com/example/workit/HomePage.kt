@@ -1,20 +1,31 @@
 package com.example.workit
 
+import retrofit2.Response
 import android.content.Intent
+import android.util.Log
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workit.databinding.ActivityHomePageBinding
 import com.example.workit.model.CompanyItem
+import com.example.workit.model.Job
 import com.example.workit.model.JobItem
+import com.example.workit.model.RemoteJob
+import com.example.workit.utils.ApiClient
 import com.example.workit.utils.CompanyAdapter
 import com.example.workit.utils.JobAdapter
 import com.google.android.material.tabs.TabLayout
+import retrofit2.Call
+import retrofit2.Callback
+import java.io.IOException
 
 class HomePage : AppCompatActivity() {
 
@@ -24,7 +35,9 @@ class HomePage : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val selectedCompanyFilters = mutableSetOf<String>()
     private val selectedJobFilters = mutableSetOf<String>()
-
+    private val allJobItems = mutableListOf<JobItem>()
+    private val allApiJobs = mutableListOf<Job>()
+    private var isUsingApiData = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +52,7 @@ class HomePage : AppCompatActivity() {
         rvJobs.layoutManager = LinearLayoutManager(this)
         rvCompanies.layoutManager = LinearLayoutManager(this)
 
-        jobAdapter = JobAdapter(getJobList().toMutableList())
+        jobAdapter = JobAdapter()
         companyAdapter = CompanyAdapter(getCompanyList().toMutableList())
 
         rvJobs.adapter = jobAdapter
@@ -123,9 +136,20 @@ class HomePage : AppCompatActivity() {
         binding.jobFilter.visibility = View.VISIBLE
         binding.companyFilter.visibility = View.GONE
 
+        loadLocalJobs()
+
+        fetchRemoteOkJobs()
         setupJobFilters()
         setupCompanyFilters()
         setupSearch()
+    }
+
+    private fun loadLocalJobs() {
+        val localJobs = getJobList()
+        allJobItems.clear()
+        allJobItems.addAll(localJobs)
+        jobAdapter.updateLocalData(localJobs)
+        isUsingApiData = false
     }
 
     private fun setupJobFilters() {
@@ -164,13 +188,33 @@ class HomePage : AppCompatActivity() {
     }
 
     private fun applyJobFilters() {
-        if (selectedJobFilters.isEmpty()) {
-            jobAdapter.updateData(getJobList())
-        } else {
-            val filteredJobs = getJobList().filter { job ->
-                selectedJobFilters.contains(job.category)
+        if (isUsingApiData) {
+            if (selectedJobFilters.isEmpty()) {
+                jobAdapter.updateFromApi(allApiJobs)
+            } else {
+                val filteredJobs = allApiJobs.filter { job ->
+                    val category = determineJobCategory(job)
+                    selectedJobFilters.contains(category)
+                }
+                jobAdapter.updateFromApi(filteredJobs)
             }
-            jobAdapter.updateData(filteredJobs)
+        } else {
+            if (selectedJobFilters.isEmpty()) {
+                jobAdapter.updateLocalData(allJobItems)
+            } else {
+                val filteredJobs = allJobItems.filter { job ->
+                    selectedJobFilters.contains(job.category)
+                }
+                jobAdapter.updateLocalData(filteredJobs)
+            }
+        }
+    }
+
+    private fun determineJobCategory(job: Job): String {
+        return when {
+            job.jobTitle.contains("intern", ignoreCase = true) -> "Intern"
+            job.jobTitle.contains("part", ignoreCase = true) -> "Part-time"
+            else -> "Fulltime"
         }
     }
 
@@ -245,13 +289,23 @@ class HomePage : AppCompatActivity() {
             }
         } else {
             if (binding.tabs.selectedTabPosition == 0) {
-                val filteredBySearch = getJobList().filter { job ->
-                    job.job_name.contains(query, ignoreCase = true) ||
-                            job.company_name.contains(query, ignoreCase = true) ||
-                            job.category.contains(query, ignoreCase = true)
+                if (isUsingApiData) {
+                    // Filter API data
+                    val filteredBySearch = allApiJobs.filter { job ->
+                        job.jobTitle.contains(query, ignoreCase = true) ||
+                                job.employerName.contains(query, ignoreCase = true) ||
+                                job.locationName.contains(query, ignoreCase = true)
+                    }
+                    jobAdapter.updateFromApi(filteredBySearch)
+                } else {
+                    // Filter local data
+                    val filteredBySearch = allJobItems.filter { job ->
+                        job.job_name.contains(query, ignoreCase = true) ||
+                                job.company_name.contains(query, ignoreCase = true) ||
+                                job.category.contains(query, ignoreCase = true)
+                    }
+                    jobAdapter.updateLocalData(filteredBySearch)
                 }
-
-                jobAdapter.updateData(filteredBySearch)
             } else {
                 val filteredBySearch = getCompanyList().filter { company ->
                     company.company_name.contains(query, ignoreCase = true) ||
@@ -289,6 +343,77 @@ class HomePage : AppCompatActivity() {
             CompanyItem("OCBC Bank", "Financial Technology", R.drawable.ocbc_logo),
             CompanyItem("Starbucks", "Food & Beverage", R.drawable.starbucks_logo)
         )
+    }
+
+    private fun fetchRemoteOkJobs() {
+        ApiClient.remoteOkService.getJobs()
+            .enqueue(object : Callback<List<RemoteJob>> {
+                override fun onResponse(
+                    call: Call<List<RemoteJob>>,
+                    response: Response<List<RemoteJob>>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val remoteJobs = response.body()!!.drop(1)
+
+                        Log.d("RemoteOK", "Jobs received: ${remoteJobs.size}")
+                        if (remoteJobs.isNotEmpty()) {
+                            Log.d(
+                                "RemoteOK",
+                                "First job: ${remoteJobs[0].position} at ${remoteJobs[0].company}"
+                            )
+                        }
+
+                        val apiJobs = remoteJobs.map { remoteJob ->
+                            Job(
+                                jobId = remoteJob.id,
+                                employerName = remoteJob.company ?: "Unknown Company",
+                                jobTitle = remoteJob.position ?: "Unknown Position",
+                                locationName = "Remote", // RemoteOK jobs are remote
+                                minimumSalary = null,
+                                maximumSalary = null,
+                                currency = "USD",
+                                expirationDate = "",
+                                description = remoteJob.description ?: "",
+                                requirements = "",
+                                url = "",
+                                logoUrl = remoteJob.logo?.takeIf {
+                                    it.startsWith("http") && (it.endsWith(".png") || it.endsWith(".jpg") || it.endsWith(
+                                        ".svg"
+                                    ))
+                                }
+                            )
+                        }
+
+                        allApiJobs.clear()
+                        allApiJobs.addAll(apiJobs)
+
+                        isUsingApiData = true
+                        applyJobFilters()
+
+                        Toast.makeText(
+                            this@HomePage,
+                            "Loaded ${apiJobs.size} remote jobs!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Log.e("RemoteOK", "API error: ${response.code()}")
+                        Toast.makeText(
+                            this@HomePage,
+                            "Failed to load remote jobs, showing local jobs",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<RemoteJob>>, t: Throwable) {
+                    Log.e("RemoteOK", "API failure: ${t.message}")
+                    Toast.makeText(
+                        this@HomePage,
+                        "Failed to load remote jobs: ${t.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
     }
 
 }

@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
@@ -76,6 +77,14 @@ class SavedPage : AppCompatActivity() {
         intent.putExtra("company_name", job.companyName)
         intent.putExtra("company_logo", job.companyLogo)
         intent.putExtra("category", job.category)
+
+
+//        job.logoUrl?.let { intent.putExtra("logoUrl", it) }
+//        job.jobId?.let { intent.putExtra("job_id", it) }
+//        job.location?.let { intent.putExtra("location", it) }
+//        job.description?.let { intent.putExtra("description", it) }
+//        job.url?.let { intent.putExtra("url", it) }
+
         startActivity(intent)
     }
 
@@ -228,7 +237,16 @@ class SavedJobsAdapter(private val onJobClick: (SavedJob) -> Unit) :
         private val companyName: TextView = itemView.findViewById(R.id.company_name)
 
         fun bind(job: SavedJob) {
-            companyLogo.setImageResource(job.companyLogo)
+            if (!job.logoUrl.isNullOrEmpty()) {
+                Glide.with(itemView.context)
+                    .load(job.logoUrl)
+                    .placeholder(job.companyLogo)
+                    .error(job.companyLogo)
+                    .into(companyLogo)
+            } else {
+                companyLogo.setImageResource(job.companyLogo)
+            }
+
             jobTitle.text = job.jobName
             companyName.text = job.companyName
 
@@ -298,7 +316,17 @@ class AppliedJobsAdapter(private val onJobClick: (SavedJob) -> Unit) :
         private val companyName: TextView = itemView.findViewById(R.id.company_name)
 
         fun bind(job: SavedJob) {
-            companyLogo.setImageResource(job.companyLogo)
+            // Load company logo using Glide if URL is available
+            if (!job.logoUrl.isNullOrEmpty()) {
+                Glide.with(itemView.context)
+                    .load(job.logoUrl)
+                    .placeholder(job.companyLogo)
+                    .error(job.companyLogo)
+                    .into(companyLogo)
+            } else {
+                companyLogo.setImageResource(job.companyLogo)
+            }
+
             jobTitle.text = job.jobName
             companyName.text = job.companyName
 

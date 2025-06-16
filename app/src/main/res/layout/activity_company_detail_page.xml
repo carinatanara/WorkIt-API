@@ -49,7 +49,7 @@
             android:layout_alignParentEnd="true"
             android:layout_gravity="center"
             android:background="@null"
-            android:src="@drawable/notification" />
+            android:src="@drawable/notification_btn" />
     </RelativeLayout>
 
     <LinearLayout
@@ -99,31 +99,31 @@
                     android:id="@+id/iv_star1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

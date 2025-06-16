@@ -6,7 +6,6 @@
     android:background="@drawable/textbox"
     android:orientation="vertical"
     android:padding="16dp">
-    >
 
     <TextView
         android:id="@+id/tv_job_type"

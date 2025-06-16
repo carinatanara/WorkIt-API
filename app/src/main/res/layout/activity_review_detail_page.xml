@@ -96,35 +96,35 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="2dp"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star2"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="2dp"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star3"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="2dp"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star4"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="2dp"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
 
                 <ImageView
                     android:id="@+id/iv_star5"
                     android:layout_width="13dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/star" />
+                    android:src="@drawable/star_icon" />
             </LinearLayout>
 
             <TextView
@@ -191,30 +191,30 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
                 </LinearLayout>
 
                 <TextView
@@ -256,30 +256,30 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
                 </LinearLayout>
 
                 <TextView
@@ -320,30 +320,30 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
                 </LinearLayout>
 
                 <TextView
@@ -384,30 +384,30 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:layout_marginEnd="1dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
 
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/star" />
+                        android:src="@drawable/star_icon" />
                 </LinearLayout>
 
                 <TextView

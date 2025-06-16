@@ -3,6 +3,7 @@ package com.example.workit
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -11,14 +12,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import android.text.Html
+import android.os.Build
 
 data class SavedJob(
     val jobName: String,
     val companyName: String,
     val companyLogo: Int,
-    val category: String
+    val category: String,
+    val logoUrl: String? = null,
+    val jobId: Int? = null,
+    val location: String? = null,
+    val description: String? = null,
+    val requirements: String? = null,
+    val url: String? = null
 )
 
 class JobDetailPage : AppCompatActivity() {
@@ -37,16 +47,49 @@ class JobDetailPage : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("saved_jobs", MODE_PRIVATE)
 
+        // Get data from intent
         val jobName = intent.getStringExtra("job_name") ?: "Job Title"
         val companyName = intent.getStringExtra("company_name") ?: "Company Name"
-        val companyLogo = intent.getIntExtra("company_logo", R.drawable.starbucks_logo)
+        val companyLogo = intent.getIntExtra("company_logo", R.drawable.placeholder_company_logo)
         val category = intent.getStringExtra("category") ?: "Category"
+        val logoUrl = intent.getStringExtra("logoUrl")
+        val jobId = intent.getIntExtra("job_id", -1).takeIf { it != -1 }
+        val location = intent.getStringExtra("location")
+        val description = intent.getStringExtra("description")
+        val url = intent.getStringExtra("url")
+        val minSalary = intent.getFloatExtra("min_salary", -1f).takeIf { it != -1f }
+        val maxSalary = intent.getFloatExtra("max_salary", -1f).takeIf { it != -1f }
+        val currency = intent.getStringExtra("currency")
+        val requirements = intent.getStringExtra("requirements")
 
         currentCompanyName = companyName
-        currentJob = SavedJob(jobName, companyName, companyLogo, category)
+        currentJob = SavedJob(
+            jobName = jobName,
+            companyName = companyName,
+            companyLogo = companyLogo,
+            category = category,
+            logoUrl = logoUrl,
+            jobId = jobId,
+            location = location,
+            description = description,
+            requirements = requirements,
+            url = url
+        )
 
         setupButtons()
-        updateJobData(jobName, companyName, companyLogo, category)
+        updateJobData(
+            jobName,
+            companyName,
+            companyLogo,
+            category,
+            logoUrl,
+            location,
+            description,
+            minSalary,
+            maxSalary,
+            currency,
+            requirements
+        )
         setupReviewSection()
         checkIfJobIsSaved()
         checkIfJobIsApplied()
@@ -77,7 +120,8 @@ class JobDetailPage : AppCompatActivity() {
     private fun applyForJob() {
         currentJob?.let { job ->
             if (isApplied) {
-                Toast.makeText(this, "You have already applied for this job!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "You have already applied for this job!", Toast.LENGTH_SHORT)
+                    .show()
                 return
             }
 
@@ -203,16 +247,112 @@ class JobDetailPage : AppCompatActivity() {
         }
     }
 
-    private fun updateJobData(jobName: String, companyName: String, companyLogo: Int, category: String) {
+    private fun cleanHtmlText(htmlText: String?): String {
+        if (htmlText.isNullOrEmpty()) return ""
+
+        var cleanText = htmlText
+
+        cleanText = cleanText.replace(Regex("<[^>]*>"), "")
+
+        cleanText = cleanText.replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&quot;", "\"")
+            .replace("&#39;", "'")
+            .replace("&nbsp;", " ")
+            .replace("&ndash;", "–")
+            .replace("&mdash;", "—")
+
+        cleanText = cleanText.replace(Regex("\\s+"), " ")
+
+        cleanText = cleanText.replace("</p><p>", "\n\n")
+            .replace("<br/>", "\n")
+            .replace("<br>", "\n")
+            .replace("<br />", "\n")
+
+        return cleanText.trim()
+    }
+
+    private fun updateJobData(
+        jobName: String,
+        companyName: String,
+        companyLogo: Int,
+        category: String,
+        logoUrl: String? = null,
+        location: String? = null,
+        description: String? = null,
+        minSalary: Float? = null,
+        maxSalary: Float? = null,
+        currency: String? = null,
+        requirements: String? = null
+    ) {
         try {
             val ivCompanyLogo = findViewById<ImageView>(R.id.iv_logo)
-            ivCompanyLogo.setImageResource(companyLogo)
+
+            if (!logoUrl.isNullOrEmpty()) {
+                Glide.with(this)
+                    .load(logoUrl)
+                    .placeholder(companyLogo)
+                    .error(companyLogo)
+                    .into(ivCompanyLogo)
+            } else {
+                ivCompanyLogo.setImageResource(companyLogo)
+            }
 
             val tvCompanyName = findViewById<TextView>(R.id.tv_company_name)
             tvCompanyName.text = companyName
 
             val tvJobName = findViewById<TextView>(R.id.tv_job_type)
             tvJobName.text = jobName
+
+            location?.let {
+                try {
+                    val tvLocation = findViewById<TextView>(R.id.tv_location)
+                    tvLocation.text = it
+                    tvLocation.visibility = View.VISIBLE
+                } catch (e: Exception) {
+                }
+            }
+
+            description?.let {
+                try {
+                    val tvDescription = findViewById<TextView>(R.id.tv_description)
+                    // Clean HTML tags for better display
+                    val cleanDescription = cleanHtmlText(it)
+                    tvDescription.text = cleanDescription
+                } catch (e: Exception) {
+                }
+            }
+
+            requirements?.let {
+                try {
+                    val tvRequirements = findViewById<TextView>(R.id.tv_req)
+                    val cleanRequirements = it.replace("<br/>", "\n")
+                        .replace("<br>", "\n")
+                        .replace("&amp;", "&")
+                        .replace("&lt;", "<")
+                        .replace("&gt;", ">")
+                    tvRequirements.text = cleanRequirements
+                } catch (e: Exception) {
+                }
+            } ?: run {
+
+                try {
+                    val tvRequirements = findViewById<TextView>(R.id.tv_req)
+                    tvRequirements.text = "No specific requirements listed for this position."
+                } catch (e: Exception) {
+                }
+            }
+
+
+            if (minSalary != null && maxSalary != null && currency != null) {
+                try {
+                    val tvSalary = findViewById<TextView>(R.id.tv_salary)
+                    tvSalary.text = "${currency} ${minSalary.toInt()} - ${maxSalary.toInt()}"
+                    tvSalary.visibility = View.VISIBLE
+                } catch (e: Exception) {
+                }
+            }
 
         } catch (e: Exception) {
             Toast.makeText(this, "Viewing: $jobName at $companyName", Toast.LENGTH_LONG).show()

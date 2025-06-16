@@ -4,15 +4,8 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.workit.model.Review
-import com.example.workit.utils.ReviewAdapter
 
 class ReviewDetailPage : AppCompatActivity() {
 
@@ -80,9 +73,9 @@ class ReviewDetailPage : AppCompatActivity() {
 
             for (i in stars.indices) {
                 if (i < rating.toInt()) {
-                    stars[i].setImageResource(R.drawable.star)
+                    stars[i].setImageResource(R.drawable.star_icon)
                 } else {
-                    stars[i].setImageResource(R.drawable.star)
+                    stars[i].setImageResource(R.drawable.star_icon)
                 }
             }
         } catch (e: Exception) {
